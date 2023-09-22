@@ -5,11 +5,16 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "start": "tsc && node dist/Main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "lodash": "^4.17.21",
     "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.198"
   }
 }
