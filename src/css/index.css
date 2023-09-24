@@ -1,0 +1,11 @@
+.card {
+  transition: all linear 1s;
+}
+
+.bg-wood {
+  background-image: url('http://localhost:5500/dist/images/wood.jpeg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-blur: blur(10px);
+}

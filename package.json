@@ -4,17 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "tsc && node dist/Main.js",
+    "build": "tsc && cp src/index.html dist/ && mkdir -p dist/css && cp src/css/* dist/css/ && cp src/js/lodash.js dist/js",
+    "start": "tsc && node dist/js/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "lodash": "^4.17.21",
     "typescript": "^5.2.2"
-  },
-  "devDependencies": {
-    "@types/lodash": "^4.14.198"
   }
 }
