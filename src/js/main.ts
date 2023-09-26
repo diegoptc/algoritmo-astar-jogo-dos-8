@@ -1,5 +1,5 @@
 import { Heap } from "./heap.js";
-import { disabledActions, drawMatrix, enabledActions  } from "./client.js";
+import { disabledActions, drawMatrix, drawStats, enabledActions  } from "./client.js";
 
 var _: any;
 
@@ -11,9 +11,52 @@ const gamePhaseGoal = [
 
 drawMatrix(gamePhaseGoal);
 
+export enum EHeuristic {
+  NUMBEROFPARTSOUTOFPLACE = 'Number of Parts Out of Place',
+  MANHATTAN = 'Manhattan'
+}
+
 export interface MatrixPosition {
   line: number;
   column: number;
+}
+
+export function numberOfPartsOutOfPlace(gamePhase: number[][]) {
+  let estimate = 0;
+
+  for (let i = 0; i < gamePhaseGoal.length; i++) {
+    for (let j = 0; j < gamePhaseGoal[i].length; j++) {
+      if (gamePhaseGoal[i][j] != gamePhase[i][j]) {
+        estimate += 1;
+      }
+    }
+  }
+
+  return estimate;
+}
+
+export function manhattan(gamePhase: number[][]) {
+  let goalPositions: any = {
+    0: [0,0],
+    1: [0,1],
+    2: [0,2],
+    3: [1,0],
+    4: [1,1],
+    5: [1,2],
+    6: [2,0],
+    7: [2,1],
+    8: [2,2]
+  };
+  let estimate = 0;
+
+  for (let i = 0; i < gamePhase.length; i++) {
+    for (let j = 0; j < gamePhase[i].length; j++) {
+      const goalPosition = goalPositions[gamePhase[i][j]]
+      estimate += Math.abs(i - goalPosition[0]) + Math.abs(j - goalPosition[1])
+    }
+  }
+
+  return estimate;
 }
 
 export class State {
@@ -21,6 +64,7 @@ export class State {
   g: number = 0;
   parent: State | null = null;
   blankPosition: MatrixPosition = { line: 0, column: 0 };
+  heuristicType: EHeuristic = EHeuristic.NUMBEROFPARTSOUTOFPLACE;
 
   private swap(one: MatrixPosition, two: MatrixPosition) {
     const temp = this.gamePhase[one.line][one.column]
@@ -32,22 +76,17 @@ export class State {
     const state = new State();
     state.gamePhase = _.cloneDeep(this.gamePhase);
     state.parent = this;
+    state.heuristicType = this.heuristicType;
     
     return state;
   }
 
   heuristic() {
-    let estimate = 0;
-
-    for (let i = 0; i < gamePhaseGoal.length; i++) {
-      for (let j = 0; j < gamePhaseGoal[i].length; j++) {
-        if (gamePhaseGoal[i][j] != this.gamePhase[i][j]) {
-          estimate += 1;
-        }
-      }
+    if (this.heuristicType == EHeuristic.MANHATTAN) {
+      return manhattan(this.gamePhase)
+    } else {
+      return numberOfPartsOutOfPlace(this.gamePhase)
     }
-
-    return estimate;
   }
 
   f() {
@@ -141,9 +180,9 @@ export async function reconstructPath(state: State) {
     current = _.cloneDeep(current.parent);
   }
   states = states.reverse();
-  console.log(states);
   for (let i = 0; i < states.length; i++) {
     await sleep(200)
+    drawStats(states[i].g, states[i].heuristic(), states[i].f())
     drawMatrix(states[i].gamePhase);
   }
   enabledActions();
@@ -158,15 +197,16 @@ export function shuffleState(state: State): State {
   return neighbors[randomNumber(0, neighbors.length - 1)];
 }
 
-export function withoutSolution(startState: State, lastState: State) {
+export function withoutSolution() {
   alert('Nao encontrei a solucao!');
   enabledActions();
 }
 
-export function aStar(startState: State) {
+export function aStar(startState: State, heuristicType: EHeuristic) {
   disabledActions();
   const edge = new Heap<State>(compare);
   const visited: any = {};
+  startState.heuristicType = heuristicType;
   edge.add(startState);
   let trys = 0;
 
@@ -174,10 +214,6 @@ export function aStar(startState: State) {
     const current = edge.remove();
     visited[current.gamePhase.toString()] = true;
     trys += 1;
-    
-    if (trys > 180000) {
-      return withoutSolution(startState, current);
-    }
 
     if (current.isGoal()) {
       return reconstructPath(current);
@@ -190,6 +226,8 @@ export function aStar(startState: State) {
       }
     }
   }
+
+  withoutSolution()
 }
 
 export function getStartState() {

@@ -31,3 +31,9 @@ export function enabledActions() {
   const startButton = document.getElementById('startButton')! as HTMLButtonElement;
   startButton.disabled = false;
 }
+
+export function drawStats(g: number, h: number, f: number) {
+  document.getElementById('gValue')!.innerHTML = g+'';
+  document.getElementById('hValue')!.innerHTML = h+'';
+  document.getElementById('fValue')!.innerHTML = f+'';
+}

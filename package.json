@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc && cp src/index.html dist/ && mkdir -p dist/css && cp src/css/* dist/css/ && cp src/js/lodash.js dist/js",
-    "start": "tsc && node dist/js/main.js",
+    "start": "pnpm run build && cd dist/ && python3 -m http.server 8080",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

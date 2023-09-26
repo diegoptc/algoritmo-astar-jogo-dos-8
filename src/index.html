@@ -1,21 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html data-theme="cupcake" lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/index.css">
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@3.8.0/dist/full.css" rel="stylesheet" type="text/css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="js/lodash.js"></script>
   <title>Diego Pereira: IA</title>
 </head>
 <body>
-  <div class="flex flex-col space-y-4 items-center bg-zinc-900 w-screen h-screen">
-    <h1 class="text-3xl font-bold text-white">A*: Jogo dos 8</h1>
-    <div class="flex w-full justify-end space-x-2 p-2">
-      <button id="shuffleButton" class="bg-orange-700 font-bold text-white rounded p-4 disabled:bg-gray-600">EMBARALHAR</button>
-      <button id="startButton" class="bg-green-700 font-bold text-white rounded p-4 disabled:bg-gray-600">RESOLVER</button>
+  <div class="flex flex-col space-y-4 items-center w-screen h-screen">
+    <h1 class="text-3xl font-bold text-primary">A*: Jogo dos 8</h1>
+    <div class="flex flex-col space-y-2 md:flex-row w-full justify-between p-2">
+      <label class="flex flex-col">
+        <span>Selecionar Heurística</span>
+        <select id="choiceHeuristic" class="select select-success">
+          <option value="Number of Parts Out of Place" selected>Número de Peças Fora do Lugar</option>
+          <option value="Manhattan">Distância de Manhattan</option>
+        </select>
+      </label>
+      <div class="flex space-x-2">
+        <button id="shuffleButton" class="btn btn-primary">EMBARALHAR</button>
+        <button id="startButton" class="btn btn-success">RESOLVER</button>
+      </div>
     </div>
     <div id="matrix" class="grid grid-cols-3 gap-0.5 bg-[#cbbb9e] border-8 border-[#766455]">
+    </div>
+    <div class="stats shadow">
+      <div class="stat">
+        <div class="stat-title">G(n)</div>
+        <div id="gValue" class="stat-value text-primary">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-title">H(n)</div>
+        <div id="hValue" class="stat-value text-primary">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-title">F(n)</div>
+        <div id="fValue" class="stat-value text-primary">0</div>
+      </div>
     </div>
   </div>
 </body>
@@ -30,7 +54,8 @@
   })
 
   document.getElementById('startButton').addEventListener('click', () => {
-    main.aStar(startState);
+    const heuristic = document.getElementById('choiceHeuristic').value;
+    main.aStar(startState, heuristic);
   })
   
 </script>
