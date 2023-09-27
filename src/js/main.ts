@@ -197,7 +197,7 @@ export function shuffleState(state: State): State {
   return neighbors[randomNumber(0, neighbors.length - 1)];
 }
 
-export function withoutSolution() {
+export function withoutSolution(trys: number) {
   alert('Nao encontrei a solucao!');
   enabledActions();
 }
@@ -213,7 +213,6 @@ export function aStar(startState: State, heuristicType: EHeuristic) {
   while (edge.length() > 0) {
     const current = edge.remove();
     visited[current.gamePhase.toString()] = true;
-    trys += 1;
 
     if (current.isGoal()) {
       return reconstructPath(current);
@@ -221,13 +220,18 @@ export function aStar(startState: State, heuristicType: EHeuristic) {
 
     for (const neighbor of current.neighbors()) {
       if (!visited[neighbor.gamePhase.toString()]) {
+        if (current.heuristic() > ((current.g + 1) + neighbor.heuristic())) {
+          console.log('Não tem consistência')
+        }
         neighbor.g = current.g + 1;
         edge.add(neighbor);
       }
     }
+
+    trys += 1;
   }
 
-  return null;
+  withoutSolution(trys);
 }
 
 export function getStateByGamePhaseAndBlankPosition(gamePhase: number[][], blankPosition: {line: number, column: number}) {
