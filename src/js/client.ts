@@ -33,8 +33,9 @@ export function enabledActions() {
   startButton.disabled = false;
 }
 
-export function drawStats(g: number, h: number, f: number) {
+export function drawStats(g: number, h: number, f: number, i: number) {
   document.getElementById('gValue')!.innerHTML = g+'';
   document.getElementById('hValue')!.innerHTML = h+'';
   document.getElementById('fValue')!.innerHTML = f+'';
+  document.getElementById('iValue')!.innerHTML = i+'';
 }

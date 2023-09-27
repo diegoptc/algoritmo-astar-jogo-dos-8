@@ -172,7 +172,7 @@ export function compare(nodeOne: State, nodeTwo: State) {
   return nodeOne.f() > nodeTwo.f();
 }
 
-export async function reconstructPath(state: State) {
+export async function reconstructPath(state: State, trys: number) {
   let states: State[] = [];
   let current = _.cloneDeep(state);
   while (current.parent) {
@@ -182,7 +182,7 @@ export async function reconstructPath(state: State) {
   states = states.reverse();
   for (let i = 0; i < states.length; i++) {
     await sleep(200)
-    drawStats(states[i].g, states[i].heuristic(), states[i].f())
+    drawStats(states[i].g, states[i].heuristic(), states[i].f(), trys)
     drawMatrix(states[i].gamePhase);
   }
   enabledActions();
@@ -198,7 +198,7 @@ export function shuffleState(state: State): State {
 }
 
 export function withoutSolution(trys: number) {
-  alert('Nao encontrei a solucao!');
+  alert(`Nao encontrei a solucão, Tentativas: ${trys}`);
   enabledActions();
 }
 
@@ -215,7 +215,7 @@ export function aStar(startState: State, heuristicType: EHeuristic) {
     visited[current.gamePhase.toString()] = true;
 
     if (current.isGoal()) {
-      return reconstructPath(current);
+      return reconstructPath(current, trys);
     }
 
     for (const neighbor of current.neighbors()) {
