@@ -4,6 +4,7 @@ export function drawMatrix(matrix: any[][]) {
   for (let i = 0; i < matrix.length; i++) {
     for (let j = 0; j < matrix[i].length; j++) {
       const element = document.createElement('div');
+      element.setAttribute('data-value', matrix[i][j]);
       element.classList.add('card', 'text-xl', 'font-bold', 'text-black', 'p-12');
       if (matrix[i][j] != 0) {
         element.innerHTML = matrix[i][j];

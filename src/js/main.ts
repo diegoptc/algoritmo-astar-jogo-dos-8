@@ -227,10 +227,17 @@ export function aStar(startState: State, heuristicType: EHeuristic) {
     }
   }
 
-  withoutSolution()
+  return null;
 }
 
-export function getStartState() {
+export function getStateByGamePhaseAndBlankPosition(gamePhase: number[][], blankPosition: {line: number, column: number}) {
+  const state = new State();
+  state.gamePhase = gamePhase;
+  state.blankPosition = blankPosition;
+  return state;
+}
+
+export function getRandomState() {
   let startState = new State();
   startState.gamePhase = _.cloneDeep(gamePhaseGoal);
   startState.blankPosition = {line: 0, column: 0}
@@ -247,4 +254,21 @@ export function getStartState() {
 
 export function main(lodash: any) {
   _ = lodash;
+  //testBatteries();
+}
+
+function testBatteries() {
+  const tests: any = {}
+
+  for (let i = 0; i < 200; i++) {
+    const state = getRandomState();
+    if (!tests[state.gamePhase.toString()]) {
+      tests[state.gamePhase.toString()] = {
+        NUMBEROFPARTSOUTOFPLACE: aStar(state, EHeuristic.NUMBEROFPARTSOUTOFPLACE),
+        MANHATTAN: aStar(state, EHeuristic.MANHATTAN)
+      }
+    }
+  }
+
+  console.log(tests);
 }
