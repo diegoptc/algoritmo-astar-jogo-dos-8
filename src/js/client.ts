@@ -39,3 +39,11 @@ export function drawStats(g: number, h: number, f: number, i: number) {
   document.getElementById('fValue')!.innerHTML = f+'';
   document.getElementById('iValue')!.innerHTML = i+'';
 }
+
+export function showMessage(title: string, message: string) {
+  const modal = document.getElementById('modal')! as HTMLDialogElement;
+  document.querySelector('#modal h3')!.innerHTML = title;
+  document.querySelector('#modal p')!.innerHTML = message;
+
+  modal.showModal();
+}

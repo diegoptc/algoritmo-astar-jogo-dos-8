@@ -1,5 +1,5 @@
 import { Heap } from "./heap.js";
-import { disabledActions, drawMatrix, drawStats, enabledActions  } from "./client.js";
+import { disabledActions, drawMatrix, drawStats, enabledActions, showMessage  } from "./client.js";
 
 var _: any;
 
@@ -174,9 +174,10 @@ export function compare(nodeOne: State, nodeTwo: State) {
   return nodeOne.f() > nodeTwo.f();
 }
 
-export async function reconstructPath(state: State, exploredNodes: number) {
+export async function reconstructPath(state: State, exploredNodes: number, time: number) {
   let states: State[] = [];
   let current = _.cloneDeep(state);
+  states.push(current);
   while (current.parent) {
     states.push(current);
     current = _.cloneDeep(current.parent);
@@ -187,6 +188,7 @@ export async function reconstructPath(state: State, exploredNodes: number) {
     drawStats(states[i].g, states[i].heuristic(), states[i].f(), exploredNodes)
     drawMatrix(states[i].gamePhase);
   }
+  showMessage('Problema resolvido!', `Problema resolvido em ${time}ms`)
   enabledActions();
 }
 
@@ -199,8 +201,8 @@ export function shuffleState(state: State): State {
   return neighbors[randomNumber(0, neighbors.length - 1)];
 }
 
-export function withoutSolution(trys: number) {
-  alert(`Nao encontrei a solucão, Nós gerados: ${trys}`);
+export function withoutSolution(trys: number, time: number) {
+  showMessage('Solução não encontrada!', `Nós gerados: ${trys} | Executado em: ${time}ms`)
   enabledActions();
 }
 
@@ -216,6 +218,7 @@ export function prettyPrintMatrix(matrix: any[][]) {
 }
 
 export function aStar(startState: State, heuristicType: EHeuristic) {
+  const startTime = performance.now();
   disabledActions();
   const edge = new Heap<State>(compare);
   const visited: any = {};
@@ -229,7 +232,7 @@ export function aStar(startState: State, heuristicType: EHeuristic) {
     visited[current.gamePhase.toString()] = true;
 
     if (current.isGoal()) {
-      return reconstructPath(current, Object.keys(hasEdge).length);
+      return reconstructPath(current, Object.keys(hasEdge).length, performance.now() - startTime);
     }
 
     for (const neighbor of current.neighbors()) {
@@ -242,7 +245,7 @@ export function aStar(startState: State, heuristicType: EHeuristic) {
       }
     }
   }
-  withoutSolution(Object.keys(hasEdge).length);
+  withoutSolution(Object.keys(hasEdge).length, performance.now() - startTime);
 }
 
 export function getStateByGamePhaseAndBlankPosition(gamePhase: number[][], blankPosition: {line: number, column: number}) {
