@@ -269,21 +269,4 @@ export function getRandomState() {
 
 export function main(lodash: any) {
   _ = lodash;
-  //testBatteries();
-}
-
-function testBatteries() {
-  const tests: any = {}
-
-  for (let i = 0; i < 200; i++) {
-    const state = getRandomState();
-    if (!tests[state.gamePhase.toString()]) {
-      tests[state.gamePhase.toString()] = {
-        NUMBEROFPARTSOUTOFPLACE: aStar(state, EHeuristic.NUMBEROFPARTSOUTOFPLACE),
-        MANHATTAN: aStar(state, EHeuristic.MANHATTAN)
-      }
-    }
-  }
-
-  console.log(tests);
 }
