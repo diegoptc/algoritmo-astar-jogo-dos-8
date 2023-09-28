@@ -51,8 +51,10 @@ export function manhattan(gamePhase: number[][]) {
 
   for (let i = 0; i < gamePhase.length; i++) {
     for (let j = 0; j < gamePhase[i].length; j++) {
-      const goalPosition = goalPositions[gamePhase[i][j]]
-      estimate += Math.abs(i - goalPosition[0]) + Math.abs(j - goalPosition[1])
+      if (gamePhase[i][j] != 0) {
+        const goalPosition = goalPositions[gamePhase[i][j]]
+        estimate += Math.abs(i - goalPosition[0]) + Math.abs(j - goalPosition[1])
+      }
     }
   }
 
@@ -184,7 +186,6 @@ export async function reconstructPath(state: State, exploredNodes: number) {
     await sleep(200)
     drawStats(states[i].g, states[i].heuristic(), states[i].f(), exploredNodes)
     drawMatrix(states[i].gamePhase);
-    //prettyPrintMatrix(states[i].gamePhase);
   }
   enabledActions();
 }
