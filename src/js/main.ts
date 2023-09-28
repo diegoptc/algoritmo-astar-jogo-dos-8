@@ -172,7 +172,7 @@ export function compare(nodeOne: State, nodeTwo: State) {
   return nodeOne.f() > nodeTwo.f();
 }
 
-export async function reconstructPath(state: State, trys: number) {
+export async function reconstructPath(state: State, exploredNodes: number) {
   let states: State[] = [];
   let current = _.cloneDeep(state);
   while (current.parent) {
@@ -182,8 +182,9 @@ export async function reconstructPath(state: State, trys: number) {
   states = states.reverse();
   for (let i = 0; i < states.length; i++) {
     await sleep(200)
-    drawStats(states[i].g, states[i].heuristic(), states[i].f(), trys)
+    drawStats(states[i].g, states[i].heuristic(), states[i].f(), exploredNodes)
     drawMatrix(states[i].gamePhase);
+    //prettyPrintMatrix(states[i].gamePhase);
   }
   enabledActions();
 }
@@ -198,40 +199,49 @@ export function shuffleState(state: State): State {
 }
 
 export function withoutSolution(trys: number) {
-  alert(`Nao encontrei a solucão, Tentativas: ${trys}`);
+  alert(`Nao encontrei a solucão, Nós gerados: ${trys}`);
   enabledActions();
+}
+
+export function prettyPrintMatrix(matrix: any[][]) {
+  let printString = ''
+  for (let i = 0; i < matrix.length; i++) {
+    for (let j = 0; j < matrix[i].length; j++) {
+      printString += `${matrix[i][j]}\t`
+    }
+    printString += '\n'
+  }
+  console.log(printString);
 }
 
 export function aStar(startState: State, heuristicType: EHeuristic) {
   disabledActions();
   const edge = new Heap<State>(compare);
   const visited: any = {};
+  const hasEdge: any = {};
   startState.heuristicType = heuristicType;
   edge.add(startState);
-  let trys = 0;
+  hasEdge[startState.gamePhase.toString()] = startState;
 
   while (edge.length() > 0) {
     const current = edge.remove();
     visited[current.gamePhase.toString()] = true;
 
     if (current.isGoal()) {
-      return reconstructPath(current, trys);
+      return reconstructPath(current, Object.keys(hasEdge).length);
     }
 
     for (const neighbor of current.neighbors()) {
-      if (!visited[neighbor.gamePhase.toString()]) {
-        if (current.heuristic() > ((current.g + 1) + neighbor.heuristic())) {
-          console.log('Não tem consistência')
-        }
+      if (visited[neighbor.gamePhase.toString()] || hasEdge[neighbor.gamePhase.toString()] && hasEdge[neighbor.gamePhase.toString()].f() < neighbor.f()) {
+        continue;
+      } else {
         neighbor.g = current.g + 1;
         edge.add(neighbor);
+        hasEdge[neighbor.gamePhase.toString()] = neighbor;
       }
     }
-
-    trys += 1;
   }
-
-  withoutSolution(trys);
+  withoutSolution(Object.keys(hasEdge).length);
 }
 
 export function getStateByGamePhaseAndBlankPosition(gamePhase: number[][], blankPosition: {line: number, column: number}) {
